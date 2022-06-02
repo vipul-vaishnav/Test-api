@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
-const objModel = new Schema({
+const obj = new Schema({
   title: {
     type: String,
     required: [true, 'A object must have a name'],
@@ -34,5 +34,7 @@ const objModel = new Schema({
     select: false,
   },
 });
+
+const objModel = mongoose.model('Obj', obj);
 
 export default objModel;

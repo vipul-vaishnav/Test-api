@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import Tour from '../../models/tourModel.mjs';
+import objModel from '../../models/objectModel.js';
 
 dotenv.config({ path: './config.env' });
 
@@ -30,15 +30,13 @@ const data = JSON.parse(readFileFunc(dataPath));
 console.log(process.env.NODE_ENV);
 
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE_PASSWORD);
-mongoose
-  .connect(DB, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false, useUnifiedTopology: true })
-  .then(() => console.log('DB CONNECTED'));
+mongoose.connect(DB, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => console.log('DB CONNECTED'));
 
 // IMPORT DATA INTO DB
 
 const importData = async () => {
   try {
-    await Tour.create(data);
+    await objModel.create(data);
     console.log('DATA SUCCESSFULLY LOADED');
   } catch (error) {
     console.log(error.message);
@@ -50,7 +48,7 @@ const importData = async () => {
 
 const deleteData = async () => {
   try {
-    await Tour.deleteMany();
+    await objModel.deleteMany();
     console.log('DATA SUCCESSFULLY DELETED');
   } catch (error) {
     console.log(error.message);
@@ -63,3 +61,5 @@ if (process.argv[2] === '--import') {
 } else if (process.argv[2] === '--delete') {
   deleteData();
 }
+
+console.log(process.argv);
