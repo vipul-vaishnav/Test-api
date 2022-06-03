@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { readFileSync, writeFile } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import objModel from '../models/objectModel.js';
 
 // reading files
 const __filename = fileURLToPath(import.meta.url);
@@ -17,27 +18,85 @@ const readFilePro = (path) => {
 const data = JSON.parse(readFilePro(dataPath));
 
 // Get all Data
-const getData = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    results: data.length,
-    data: {
-      data,
-    },
-  });
+const getData = async (req, res) => {
+  try {
+    const data = await objModel.find();
+
+    res.status(200).json({
+      status: 'success',
+      results: data.length,
+      data: {
+        data,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: error.message,
+    });
+  }
 };
 
 // Get single Data
-const getOne = (req, res) => {
-  const { id } = req.params;
-  const [obj] = data.filter((obj) => obj.id === id);
-  res.status(200).json({
-    status: 'success',
-    results: data.length,
-    data: {
-      obj,
-    },
-  });
+const getOneById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await objModel.findById(id);
+    res.status(200).json({
+      status: 'success',
+      results: 1,
+      data: {
+        data,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: error.message,
+    });
+  }
+};
+
+// get movies or series
+const getCategoryData = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const options = category === 'movies' ? { category: 'Movie' } : { category: 'TV Series' };
+    const data = await objModel.find(options);
+    res.status(200).json({
+      status: 'success',
+      results: data.length,
+      data: {
+        data,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: error.message,
+    });
+  }
+};
+
+// get movie or series by name and category
+const getOneByTitle = async (req, res) => {
+  try {
+    const { title } = req.params;
+    const options = { title: title };
+    const data = await objModel.find(options);
+    res.status(200).json({
+      status: 'success',
+      results: 1,
+      data: {
+        data,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: error.message,
+    });
+  }
 };
 
 // Post new Data
@@ -93,4 +152,4 @@ const deleteData = (req, res) => {
   });
 };
 
-export { getData, getOne, postData, updateData, deleteData };
+export { getData, getOneById, postData, updateData, deleteData, getCategoryData, getOneByTitle };
